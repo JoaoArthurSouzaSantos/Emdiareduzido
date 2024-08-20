@@ -1,0 +1,7 @@
+SQLAlchemy~=2.0.28
+jwt~=1.3.1
+PyJWT~=2.8.0
+fastapi~=0.110.0
+pydantic~=2.6.4
+passlib~=1.7.4
+alembic~=1.13.1
