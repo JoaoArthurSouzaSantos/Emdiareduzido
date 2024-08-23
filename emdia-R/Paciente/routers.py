@@ -5,7 +5,6 @@ from Paciente.models import Paciente
 from Paciente.schemas import PacienteCreate, PacienteOut ,PacienteWithPessoaOut
 from Pessoa.models import Pessoa
 from Consulta.models import Consulta
-from Paciente.schemas import PacienteWithConsultasOut
 
 router = APIRouter()
 #rota para extrair tds os dados da mesma entidade
@@ -26,7 +25,13 @@ router = APIRouter()
 
 @router.get("/paciente_pessoa/{numeroSUS}", response_model=PacienteWithPessoaOut)
 def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
-    paciente_pessoa = db.query(Paciente).join(Pessoa, Paciente.id_paciente == Pessoa.cpf).filter(Paciente.numeroSUS == numeroSUS).first()
+    # Realizando a consulta para buscar o Paciente e a Pessoa associada
+    paciente_pessoa = (
+        db.query(Paciente)
+        .join(Pessoa, Paciente.id_paciente == Pessoa.cpf)
+        .filter(Paciente.numeroSUS == numeroSUS)
+        .first()
+    )
     
     if paciente_pessoa is None:
         raise HTTPException(status_code=404, detail="Paciente ou Pessoa não encontrados")
