@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from shared.dependencies import get_db
 from Paciente.models import Paciente
-from Paciente.schemas import PacienteCreate, PacienteOut ,PacienteWithPessoaOut
+from Paciente.schemas import PacienteCreate, PacienteOut ,PacienteWithPessoaOut,PacienteWithPessoaConsultaOut
 from Pessoa.models import Pessoa
 from Consulta.models import Consulta
 
@@ -11,17 +11,20 @@ router = APIRouter()
 #rota para tds as consulta desse paciente 
 #rotas para tds os valores de Hemoglobina g e data
 
-# @router.get("/paciente_consultas/{numeroSUS}", response_model=PacienteWithConsultasOut)
-# def get_paciente_with_consultas(numeroSUS: str, db: Session = Depends(get_db)):
-#     paciente = db.query(Paciente).filter(Paciente.numeroSUS == numeroSUS).first()
+@router.get("/paciente_pessoa_consulta/{numeroSUS}", response_model=PacienteWithPessoaConsultaOut)
+def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
+    paciente_pessoa_consulta = (
+        db.query(Paciente)
+        .join(Pessoa, Paciente.id_paciente == Pessoa.cpf)
+        .join(Consulta, Paciente.numeroSUS == Consulta.id_paciente)
+        .filter(Paciente.numeroSUS == numeroSUS)
+        .first()
+    )
     
-#     if paciente is None:
-#         raise HTTPException(status_code=404, detail="Paciente não encontrado")
-
-#     consultas = db.query(Consulta).filter(Consulta.id_paciente == numeroSUS).all()
+    if paciente_pessoa_consulta is None:
+        raise HTTPException(status_code=404, detail="Paciente, Pessoa ou Consulta não encontrados")
     
-#     paciente.consultas = consultas
-#     return paciente
+    return paciente_pessoa_consulta
 
 @router.get("/paciente_pessoa/{numeroSUS}", response_model=PacienteWithPessoaOut)
 def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
