@@ -8,7 +8,5 @@ class Funcionario(Base):
     username = Column(String(255), unique=True, index=True)
     password = Column(String(255), index=True)
 
-    # Relacionamentos
     pessoa = relationship("Pessoa", back_populates="funcionario")
     consultas = relationship("Consulta", back_populates="funcionario", cascade="all, delete-orphan")
-

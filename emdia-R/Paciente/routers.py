@@ -5,11 +5,11 @@ from Paciente.models import Paciente
 from Paciente.schemas import PacienteCreate, PacienteOut ,PacienteWithPessoaOut,PacienteWithPessoaConsultaOut
 from Pessoa.models import Pessoa
 from Consulta.models import Consulta
+from sqlalchemy.exc import IntegrityError
 
 router = APIRouter()
 #rota para extrair tds os dados da mesma entidade
 #rota para tds as consulta desse paciente 
-#rotas para tds os valores de Hemoglobina g e data
 
 @router.get("/paciente_pessoa_consulta/{numeroSUS}", response_model=PacienteWithPessoaConsultaOut)
 def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
@@ -40,14 +40,24 @@ def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Paciente ou Pessoa não encontrados")
     
     return paciente_pessoa
-
 @router.post("/create/", response_model=PacienteOut)
 def create_paciente(paciente_create: PacienteCreate, db: Session = Depends(get_db)):
-    db_paciente = Paciente(**paciente_create.dict())
-    db.add(db_paciente)
-    db.commit()
-    db.refresh(db_paciente)
-    return db_paciente
+    # Verificar se o CPF já está cadastrado
+    paciente_existente = db.query(Paciente).filter(Paciente.numeroSUS == paciente_create.numeroSUS).first()
+    if paciente_existente:
+        raise HTTPException(status_code=400, detail="Paciente com o número SUS já existe")
+    
+    try:
+        # Criar e adicionar o novo paciente
+        db_paciente = Paciente(**paciente_create.dict())
+        db.add(db_paciente)
+        db.commit()
+        db.refresh(db_paciente)
+        return db_paciente
+    except IntegrityError:
+        # Em caso de erro de integridade, como violação de chave única
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Erro de integridade ao criar o paciente")
 
 @router.get("/read/{numeroSUS}", response_model=PacienteOut)
 def read_paciente(numeroSUS: str, db: Session = Depends(get_db)):

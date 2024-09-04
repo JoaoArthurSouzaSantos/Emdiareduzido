@@ -1,8 +1,8 @@
-"""migration 1
+"""agora vai
 
-Revision ID: 804e9b218dfc
+Revision ID: d17001175826
 Revises: 
-Create Date: 2024-07-22 16:00:19.598509
+Create Date: 2024-09-04 00:49:53.714362
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '804e9b218dfc'
+revision: str = 'd17001175826'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -40,7 +40,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_funcionarios_password'), 'funcionarios', ['password'], unique=False)
     op.create_index(op.f('ix_funcionarios_username'), 'funcionarios', ['username'], unique=True)
     op.create_table('pacientes',
-    sa.Column('numeroSUS', sa.Integer(), nullable=False),
+    sa.Column('numeroSUS', sa.String(length=255), nullable=False),
     sa.Column('id_paciente', sa.String(length=255), nullable=True),
     sa.Column('data_nascimento', sa.Date(), nullable=True),
     sa.Column('sexo', sa.String(length=255), nullable=True),
@@ -49,14 +49,15 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('numeroSUS')
     )
     op.create_index(op.f('ix_pacientes_id_paciente'), 'pacientes', ['id_paciente'], unique=False)
-    op.create_index(op.f('ix_pacientes_info'), 'pacientes', ['info'], unique=True)
+    op.create_index(op.f('ix_pacientes_info'), 'pacientes', ['info'], unique=False)
     op.create_index(op.f('ix_pacientes_numeroSUS'), 'pacientes', ['numeroSUS'], unique=False)
-    op.create_index(op.f('ix_pacientes_sexo'), 'pacientes', ['sexo'], unique=True)
+    op.create_index(op.f('ix_pacientes_sexo'), 'pacientes', ['sexo'], unique=False)
     op.create_table('consultas',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('id_paciente', sa.Integer(), nullable=True),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('id_paciente', sa.String(length=255), nullable=True),
     sa.Column('id_funcionario', sa.String(length=255), nullable=True),
     sa.Column('data', sa.Date(), nullable=True),
+    sa.Column('dataretorno', sa.Date(), nullable=True),
     sa.Column('hbg', sa.Float(), nullable=True),
     sa.Column('tomaMedHipertensao', sa.String(length=255), nullable=True),
     sa.Column('praticaAtivFisica', sa.String(length=255), nullable=True),
@@ -68,6 +69,7 @@ def upgrade() -> None:
     sa.Column('resultadoFindRisc', sa.String(length=255), nullable=True),
     sa.Column('frequenciaIngestaoVegetaisFrutas', sa.String(length=255), nullable=True),
     sa.Column('historicoFamiliar', sa.String(length=255), nullable=True),
+    sa.Column('medico', sa.String(length=255), nullable=True),
     sa.ForeignKeyConstraint(['id_funcionario'], ['funcionarios.id'], ),
     sa.ForeignKeyConstraint(['id_paciente'], ['pacientes.numeroSUS'], ),
     sa.PrimaryKeyConstraint('id')

@@ -1,9 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_, func
 from shared.dependencies import get_db
 from .models import Consulta
-from .schemas import ConsultaCreate, ConsultaOut
+from Paciente.models import Paciente
+from Funcionario.models import Funcionario
+from Pessoa.models import Pessoa
+from .schemas import ConsultaCreate, ConsultaOut,ConsultaPacientePessoaOut,EvolucaoHB
 from typing import List
 from datetime import date
 
@@ -11,11 +15,27 @@ router = APIRouter()
 
 @router.post("/consulta/", response_model=ConsultaOut)
 def create_consulta(consulta: ConsultaCreate, db: Session = Depends(get_db)):
-    db_consulta = Consulta(**consulta.dict())
-    db.add(db_consulta)
-    db.commit()
-    db.refresh(db_consulta)
-    return db_consulta
+    # Verificar se o paciente existe
+    paciente = db.query(Paciente).filter(Paciente.numeroSUS == consulta.id_paciente).first()
+    if not paciente:
+        raise HTTPException(status_code=404, detail="Paciente não encontrado")
+    
+    # Verificar se o funcionário existe
+    funcionario = db.query(Funcionario).filter(Funcionario.id == consulta.id_funcionario).first()
+    if not funcionario:
+        raise HTTPException(status_code=404, detail="Funcionário não encontrado")
+
+    try:
+        # Criar e adicionar a nova consulta
+        db_consulta = Consulta(**consulta.dict())
+        db.add(db_consulta)
+        db.commit()
+        db.refresh(db_consulta)
+        return db_consulta
+    except IntegrityError:
+        # Em caso de erro de integridade, como chave estrangeira violada
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Erro de integridade ao criar a consulta")
 
 @router.get("/consulta/{consulta_id}", response_model=ConsultaOut)
 def read_consulta(consulta_id: int, db: Session = Depends(get_db)):
@@ -86,3 +106,75 @@ def get_consultas_futuras(db: Session = Depends(get_db)):
     today = date.today()
     consultas = db.query(Consulta).filter(Consulta.data >= today).all()
     return consultas
+
+
+
+@router.get("/relatorio/paciente/pessoa/consultas_completo_da_pessoa{id_paciente}", response_model=List[ConsultaPacientePessoaOut])
+def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
+    consultas = db.query(Consulta, Paciente, Pessoa).\
+        join(Paciente, Consulta.id_paciente == Paciente.numeroSUS).\
+        join(Pessoa, Paciente.id_paciente == Pessoa.cpf).\
+        filter(Consulta.id_paciente == id_paciente).all()
+
+    results = []
+    for consulta, paciente, pessoa in consultas:
+        results.append({
+            "id": consulta.id,
+            "id_paciente": consulta.id_paciente,
+            "id_funcionario": consulta.id_funcionario,
+            "data": consulta.data,
+            "dataRetorno": consulta.dataretorno,
+            "hbg": consulta.hbg,
+            "tomaMedHipertensao": consulta.tomaMedHipertensao,
+            "praticaAtivFisica": consulta.praticaAtivFisica,
+            "imc": consulta.imc,
+            "peso": consulta.peso,
+            "historicoAcucarElevado": consulta.historicoAcucarElevado,
+            "altura": consulta.altura,
+            "cintura": consulta.cintura,
+            "resultadoFindRisc": consulta.resultadoFindRisc,
+            "frequenciaIngestaoVegetaisFrutas": consulta.frequenciaIngestaoVegetaisFrutas,
+            "historicoFamiliar": consulta.historicoFamiliar,
+            "medico": consulta.medico,
+            "numeroSUS": paciente.numeroSUS,
+            "data_nascimento": paciente.data_nascimento,
+            "sexo": paciente.sexo,
+            "info": paciente.info,
+            "cpf": pessoa.cpf,
+            "nome": pessoa.nome,
+            "email": pessoa.email
+        })
+
+    return results
+
+
+@router.get("/relatorio/evoluçãoHB{id_paciente}", response_model=List[EvolucaoHB])
+def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
+    consultas = db.query(Consulta, Paciente, Pessoa).\
+        join(Paciente, Consulta.id_paciente == Paciente.numeroSUS).\
+        join(Pessoa, Paciente.id_paciente == Pessoa.cpf).\
+        filter(Consulta.id_paciente == id_paciente).all()
+
+    results = []
+    for consulta, paciente, pessoa in consultas:
+        results.append({
+            "data": consulta.data,
+            "hbg": consulta.hbg,
+            "tomaMedHipertensao": consulta.tomaMedHipertensao,
+            "praticaAtivFisica": consulta.praticaAtivFisica,
+            "imc": consulta.imc,
+            "peso": consulta.peso,
+            "historicoAcucarElevado": consulta.historicoAcucarElevado,
+            "altura": consulta.altura,
+            "cintura": consulta.cintura,
+            "resultadoFindRisc": consulta.resultadoFindRisc,
+            "frequenciaIngestaoVegetaisFrutas": consulta.frequenciaIngestaoVegetaisFrutas,
+            "historicoFamiliar": consulta.historicoFamiliar,
+            "medico": consulta.medico,
+            "data_nascimento": paciente.data_nascimento,
+            "sexo": paciente.sexo,
+            "info": paciente.info,
+            "nome": pessoa.nome,
+        })
+
+    return results

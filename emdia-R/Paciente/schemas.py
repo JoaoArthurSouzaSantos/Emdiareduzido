@@ -3,7 +3,6 @@ from datetime import date
 from typing import Optional
 from typing import List
 
-
 class PacienteCreate(BaseModel):
     data_nascimento:  date
     numeroSUS: int
