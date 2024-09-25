@@ -13,7 +13,7 @@ from datetime import date
 
 router = APIRouter()
 
-@router.post("/consulta/", response_model=ConsultaOut)
+@router.post("/consulta/", response_model=ConsultaCreate)
 def create_consulta(consulta: ConsultaCreate, db: Session = Depends(get_db)):
     # Verificar se o paciente existe
     paciente = db.query(Paciente).filter(Paciente.numeroSUS == consulta.id_paciente).first()
@@ -73,7 +73,30 @@ def get_historico_consultas(db: Session = Depends(get_db)):
 # Consultas dentro de uma data escolhida
 @router.get("/relatorio/data", response_model=List[ConsultaOut])
 def get_consultas_por_data(data_escolhida: date, db: Session = Depends(get_db)):
-    consultas = db.query(Consulta).filter(Consulta.data == data_escolhida).all()
+    consultas = db.query(
+        Consulta.id,
+        Consulta.id_paciente,
+        Pessoa.nome.label("nome"),  # Junta com a tabela Pessoa para pegar o nome
+        Consulta.id_funcionario,
+        Consulta.data,
+        Consulta.dataretorno,
+        Consulta.hbg,
+        Consulta.tomaMedHipertensao,
+        Consulta.praticaAtivFisica,
+        Consulta.imc,
+        Consulta.peso,
+        Consulta.historicoAcucarElevado,
+        Consulta.altura,
+        Consulta.cintura,
+        Consulta.resultadoFindRisc,
+        Consulta.frequenciaIngestaoVegetaisFrutas,
+        Consulta.historicoFamiliar,
+        Consulta.medico
+    ).join(Paciente, Paciente.numeroSUS == Consulta.id_paciente)\
+     .join(Pessoa, Pessoa.cpf == Paciente.id_paciente)\
+     .filter(Consulta.data == data_escolhida)\
+     .all()
+
     return consultas
 
 # Consultas feitas por um funcionário específico
@@ -89,9 +112,35 @@ def get_consultas_por_paciente(id_paciente: int, db: Session = Depends(get_db)):
     return consultas
 
 # Consultas entre duas datas específicas
+from sqlalchemy.orm import joinedload
+from sqlalchemy import and_
+
 @router.get("/relatorio/periodo", response_model=List[ConsultaOut])
 def get_consultas_por_periodo(data_inicio: date, data_fim: date, db: Session = Depends(get_db)):
-    consultas = db.query(Consulta).filter(and_(Consulta.data >= data_inicio, Consulta.data <= data_fim)).all()
+    consultas = db.query(
+        Consulta.id,
+        Consulta.id_paciente,
+        Consulta.id_funcionario,
+        Consulta.data,
+        Consulta.dataretorno,
+        Consulta.hbg,
+        Consulta.tomaMedHipertensao,
+        Consulta.praticaAtivFisica,
+        Consulta.imc,
+        Consulta.peso,
+        Consulta.historicoAcucarElevado,
+        Consulta.altura,
+        Consulta.cintura,
+        Consulta.resultadoFindRisc,
+        Consulta.frequenciaIngestaoVegetaisFrutas,
+        Consulta.historicoFamiliar,
+        Consulta.medico,
+        Pessoa.nome.label("nome")  # Pega o nome diretamente da tabela Pessoa
+    ).join(Paciente, Paciente.numeroSUS == Consulta.id_paciente)\
+     .join(Pessoa, Pessoa.cpf == Paciente.id_paciente)\
+     .filter(and_(Consulta.data >= data_inicio, Consulta.data <= data_fim))\
+     .all()
+
     return consultas
 
 # Número de consultas por dia

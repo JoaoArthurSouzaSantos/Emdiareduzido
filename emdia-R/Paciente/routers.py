@@ -40,6 +40,7 @@ def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Paciente ou Pessoa não encontrados")
     
     return paciente_pessoa
+
 @router.post("/create/", response_model=PacienteOut)
 def create_paciente(paciente_create: PacienteCreate, db: Session = Depends(get_db)):
     # Verificar se o CPF já está cadastrado

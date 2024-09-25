@@ -23,23 +23,25 @@ class ConsultaCreate(BaseModel):
         orm_mode = True
 
 class ConsultaOut(BaseModel):
-    id: int  
-    id_paciente: int 
-    id_funcionario: str  
-    data: date  
-    dataretorno: date  # Altere este nome para corresponder ao nome do campo no SQLAlchemy
-    hbg: Optional[float] = None  
-    tomaMedHipertensao: Optional[str] = None  
-    praticaAtivFisica: Optional[str] = None  
-    imc: Optional[float] = None  
-    peso: Optional[float] = None  
-    historicoAcucarElevado: Optional[str] = None  
-    altura: Optional[float] = None  
-    cintura: Optional[float] = None  
-    resultadoFindRisc: Optional[str] = None  
-    frequenciaIngestaoVegetaisFrutas: Optional[str] = None 
-    historicoFamiliar: Optional[str] = None
-    medico: Optional[str] = None  
+    id: int
+    id_paciente: str
+    id_funcionario: str
+    data: date
+    dataretorno: date
+    hbg: float
+    tomaMedHipertensao: str
+    praticaAtivFisica: str
+    imc: float
+    peso: float
+    historicoAcucarElevado: str
+    altura: float
+    cintura: float
+    resultadoFindRisc: str
+    frequenciaIngestaoVegetaisFrutas: str
+    historicoFamiliar: str
+    medico: str
+    nome: str  # Incluímos o nome diretamente
+
     class Config:
         orm_mode = True
 
@@ -73,10 +75,6 @@ class ConsultaPacientePessoaOut(BaseModel):
 
     class Config:
         orm_mode = True
-
-from pydantic import BaseModel
-from typing import Optional
-from datetime import date
 
 class EvolucaoHB(BaseModel):
     data: date
