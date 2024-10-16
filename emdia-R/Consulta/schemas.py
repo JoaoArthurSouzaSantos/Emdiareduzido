@@ -6,7 +6,7 @@ class ConsultaCreate(BaseModel):
     id_paciente: int  
     id_funcionario: str  
     data: date  
-    dataretorno: date  # Certifique-se de que este nome corresponde ao nome do campo no SQLAlchemy
+    dataRetorno: date  # Certifique-se de que este nome corresponde ao nome do campo no SQLAlchemy
     hbg: Optional[float] = None  
     tomaMedHipertensao: Optional[str] = None  
     praticaAtivFisica: Optional[str] = None  
@@ -27,7 +27,7 @@ class ConsultaOut(BaseModel):
     id_paciente: str
     id_funcionario: str
     data: date
-    dataretorno: date
+    dataRetorno: date
     hbg: float
     tomaMedHipertensao: str
     praticaAtivFisica: str
