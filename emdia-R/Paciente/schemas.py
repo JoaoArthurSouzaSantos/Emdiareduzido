@@ -59,28 +59,44 @@ class ConsultaOut(BaseModel):
     class Config:
         orm_mode = True
 
-class PacienteWithPessoaConsultaOut(BaseModel):
-    numeroSUS: int
-    id_paciente: str
+
+class PacienteSchema(BaseModel):
+    numeroSUS: str
     data_nascimento: Optional[date]
     sexo: Optional[str]
     info: Optional[str]
-    pessoa: PessoaOut
-    consultas: List[ConsultaOut]  # Lista de consultas
+    cpf: str
+    nome: str
+    email: str
 
     class Config:
         orm_mode = True
 
-    @classmethod
-    def from_orm(cls, obj):
-        # Serializa os dados corretamente, incluindo a lista de consultas
-        return cls(
-            numeroSUS=obj.numeroSUS,
-            id_paciente=obj.id_paciente,
-            data_nascimento=obj.data_nascimento.isoformat() if obj.data_nascimento else None,
-            sexo=obj.sexo,
-            info=obj.info,
-            pessoa=obj.pessoa,
-            consultas=[ConsultaOut.from_orm(c) for c in obj.consultas]
-        )
-    
+class ConsultaSchema(BaseModel):
+    id: int
+    id_funcionario: str
+    data: date
+    dataretorno: Optional[date]  # Campo adicional, certifique-se de que existe no modelo
+    hbg: Optional[float]
+    tomaMedHipertensao: Optional[str]
+    praticaAtivFisica: Optional[str]
+    imc: Optional[float]
+    peso: Optional[float]
+    historicoAcucarElevado: Optional[str]
+    altura: Optional[float]
+    cintura: Optional[float]
+    resultadoFindRisc: Optional[str]
+    frequenciaIngestaoVegetaisFrutas: Optional[str]
+    historicoFamiliar: Optional[str]  # Campo adicional, certifique-se de que existe no modelo
+    medico: Optional[str]  # Campo adicional, certifique-se de que existe no modelo
+
+    class Config:
+        orm_mode = True
+
+class PacienteWithPessoaConsultaOut(BaseModel):
+    paciente: PacienteSchema
+    consultas: List[ConsultaSchema]
+
+    class Config:
+        orm_mode = True
+

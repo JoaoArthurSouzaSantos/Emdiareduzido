@@ -10,21 +10,56 @@ from sqlalchemy.exc import IntegrityError
 router = APIRouter()
 #rota para extrair tds os dados da mesma entidade
 #rota para tds as consulta desse paciente 
-
 @router.get("/paciente_pessoa_consulta/{numeroSUS}", response_model=PacienteWithPessoaConsultaOut)
 def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
+    # Buscar o paciente, pessoa e consultas associadas
     paciente_pessoa_consulta = (
         db.query(Paciente)
         .join(Pessoa, Paciente.id_paciente == Pessoa.cpf)
-        .join(Consulta, Paciente.numeroSUS == Consulta.id_paciente)
+        .outerjoin(Consulta, Paciente.numeroSUS == Consulta.id_paciente)
         .filter(Paciente.numeroSUS == numeroSUS)
         .first()
     )
     
     if paciente_pessoa_consulta is None:
         raise HTTPException(status_code=404, detail="Paciente, Pessoa ou Consulta não encontrados")
+
+    # Montar o retorno no formato solicitado
+    resultado = {
+        "paciente": {
+            "numeroSUS": paciente_pessoa_consulta.numeroSUS,
+            "data_nascimento": paciente_pessoa_consulta.data_nascimento,
+            "sexo": paciente_pessoa_consulta.sexo,
+            "info": paciente_pessoa_consulta.info,
+            "cpf": paciente_pessoa_consulta.pessoa.cpf,
+            "nome": paciente_pessoa_consulta.pessoa.nome,
+            "email": paciente_pessoa_consulta.pessoa.email,
+        },
+        "consultas": [
+            {
+                "id": consulta.id,
+                "id_funcionario": consulta.id_funcionario,
+                "data": consulta.data,
+                "dataretorno": consulta.dataretorno,  # Certifique-se de que este campo existe no modelo de consulta
+                "hbg": consulta.hbg,
+                "tomaMedHipertensao": consulta.tomaMedHipertensao,
+                "praticaAtivFisica": consulta.praticaAtivFisica,
+                "imc": consulta.imc,
+                "peso": consulta.peso,
+                "historicoAcucarElevado": consulta.historicoAcucarElevado,
+                "altura": consulta.altura,
+                "cintura": consulta.cintura,
+                "resultadoFindRisc": consulta.resultadoFindRisc,
+                "frequenciaIngestaoVegetaisFrutas": consulta.frequenciaIngestaoVegetaisFrutas,
+                "historicoFamiliar": consulta.historicoFamiliar,  # Certifique-se de que este campo existe no modelo
+                "medico": consulta.medico  # Certifique-se de que este campo existe no modelo
+            } for consulta in paciente_pessoa_consulta.consultas
+        ]
+    }
     
-    return paciente_pessoa_consulta
+    return resultado
+
+
 
 @router.get("/paciente_pessoa/{numeroSUS}", response_model=PacienteWithPessoaOut)
 def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
