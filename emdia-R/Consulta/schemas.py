@@ -27,7 +27,7 @@ class ConsultaOut(BaseModel):
     id_paciente: str
     id_funcionario: str
     data: date
-    dataRetorno: date
+    dataretorno: date
     hbg: float
     tomaMedHipertensao: str
     praticaAtivFisica: str
