@@ -8,6 +8,11 @@ router = APIRouter()
 
 @router.post("/create/", response_model=PessoaOut)
 def create_pessoa(pessoa: PessoaCreate, db: Session = Depends(get_db)):
+    # Verifica se já existe uma pessoa com o CPF
+    existing_pessoa = db.query(Pessoa).filter(Pessoa.cpf == pessoa.cpf).first()
+    if existing_pessoa:
+        raise HTTPException(status_code=400, detail="Pessoa com esse CPF já existe")
+    
     db_pessoa = Pessoa(**pessoa.dict())
     db.add(db_pessoa)
     db.commit()
