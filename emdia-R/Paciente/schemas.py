@@ -45,7 +45,8 @@ class ConsultaOut(BaseModel):
     id: int  
     id_paciente: int  
     id_funcionario: str  
-    data: date  
+    data: date
+    dataretorno: date  
     hbg: Optional[float] = None  
     tomaMedHipertensao: Optional[str] = None  
     praticaAtivFisica: Optional[str] = None  
