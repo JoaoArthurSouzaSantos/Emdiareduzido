@@ -100,7 +100,7 @@ def get_consultas_por_data(data_escolhida: date, db: Session = Depends(get_db)):
     return consultas
 
 @router.get("/relatorio/funcionario/{id_funcionario}", response_model=List[ConsultaOut])
-def get_consultas_por_funcionario(id_funcionario: int, db: Session = Depends(get_db)):
+def get_consultas_por_funcionario(id_funcionario: str, db: Session = Depends(get_db)):
     consultas = db.query(
         Consulta.id,
         Consulta.id_paciente,
@@ -129,7 +129,7 @@ def get_consultas_por_funcionario(id_funcionario: int, db: Session = Depends(get
 
 
 @router.get("/relatorio/paciente/{id_paciente}", response_model=List[ConsultaOut])
-def get_consultas_por_paciente(id_paciente: int, db: Session = Depends(get_db)):
+def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
     consultas = db.query(
         Consulta.id,
         Consulta.id_paciente,
