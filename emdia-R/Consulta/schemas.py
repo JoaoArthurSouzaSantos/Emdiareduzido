@@ -3,8 +3,8 @@ from datetime import date
 from typing import Optional
 
 class ConsultaCreate(BaseModel):
-    id_paciente: int  
-    id_funcionario: str  
+    idPaciente: int  
+    idFuncionario: str  
     data: date  
     dataRetorno: date  # Certifique-se de que este nome corresponde ao nome do campo no SQLAlchemy
     hbg: Optional[float] = None  
@@ -24,8 +24,8 @@ class ConsultaCreate(BaseModel):
 
 class ConsultaOut(BaseModel):
     id: int
-    id_paciente: str
-    id_funcionario: str
+    idPaciente: str
+    idFuncionario: str
     data: date
     dataretorno: date
     hbg: float
@@ -48,8 +48,8 @@ class ConsultaOut(BaseModel):
 
 class ConsultaPacientePessoaOut(BaseModel):
     id: int
-    id_paciente: str
-    id_funcionario: str
+    idPaciente: str
+    idFuncionario: str
     data: date
     dataRetorno: date
     hbg: Optional[float] = None
@@ -90,7 +90,7 @@ class EvolucaoHB(BaseModel):
     frequenciaIngestaoVegetaisFrutas: Optional[str] = None
     historicoFamiliar: Optional[str] = None
     medico: Optional[str] = None
-    data_nascimento: date
+    dataNascimento: date
     sexo: str
     info: str
     nome: str

@@ -4,7 +4,7 @@ class FuncionarioCreate(BaseModel):
     id: str
     username: str
     password: str
-
+    
     class Config:
         orm_mode = True
 

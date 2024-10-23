@@ -4,9 +4,9 @@ from typing import Optional
 from typing import List
 
 class PacienteCreate(BaseModel):
-    data_nascimento:  date
+    dataNascimento:  date
     numeroSUS: int
-    id_paciente: str  
+    idPaciente: str  
     sexo : str
     info: str
 
@@ -15,7 +15,7 @@ class PacienteCreate(BaseModel):
 
 class PacienteOut(BaseModel):
     numeroSUS: int
-    id_paciente: str  
+    idPaciente: str  
     sexo : str
     info: str
 
@@ -32,8 +32,8 @@ class PessoaOut(BaseModel):
 
 class PacienteWithPessoaOut(BaseModel):
     numeroSUS: int
-    id_paciente: str
-    data_nascimento: Optional[date]  # ou Date
+    idPaciente: str
+    dataNascimento: Optional[date]  # ou Date
     sexo: Optional[str]
     info: Optional[str]
     pessoa: PessoaOut
@@ -43,8 +43,8 @@ class PacienteWithPessoaOut(BaseModel):
 
 class ConsultaOut(BaseModel):
     id: int  
-    id_paciente: int  
-    id_funcionario: str  
+    idPaciente: int  
+    idFuncionario: str  
     data: date
     dataretorno: date  
     hbg: Optional[float] = None  
@@ -63,7 +63,7 @@ class ConsultaOut(BaseModel):
 
 class PacienteSchema(BaseModel):
     numeroSUS: str
-    data_nascimento: Optional[date]
+    dataNascimento: Optional[date]
     sexo: Optional[str]
     info: Optional[str]
     cpf: str
@@ -75,7 +75,7 @@ class PacienteSchema(BaseModel):
 
 class ConsultaSchema(BaseModel):
     id: int
-    id_funcionario: str
+    idFuncionario: str
     data: date
     dataretorno: Optional[date]  # Campo adicional, certifique-se de que existe no modelo
     hbg: Optional[float]
