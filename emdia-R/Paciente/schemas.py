@@ -46,7 +46,7 @@ class ConsultaOut(BaseModel):
     idPaciente: int  
     idFuncionario: str  
     data: date
-    dataretorno: date  
+    dataRetorno: date  
     hbg: Optional[float] = None  
     tomaMedHipertensao: Optional[str] = None  
     praticaAtivFisica: Optional[str] = None  
@@ -77,7 +77,7 @@ class ConsultaSchema(BaseModel):
     id: int
     idFuncionario: str
     data: date
-    dataretorno: Optional[date]  # Campo adicional, certifique-se de que existe no modelo
+    dataRetorno: Optional[date]  # Campo adicional, certifique-se de que existe no modelo
     hbg: Optional[float]
     tomaMedHipertensao: Optional[str]
     praticaAtivFisica: Optional[str]
