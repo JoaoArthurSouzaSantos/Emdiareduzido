@@ -28,7 +28,7 @@ def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
     resultado = {
         "paciente": {
             "numeroSUS": paciente_pessoa_consulta.numeroSUS,
-            "dataNascimento": paciente_pessoa_consulta.data_nascimento,
+            "dataNascimento": paciente_pessoa_consulta.dataNascimento,
             "sexo": paciente_pessoa_consulta.sexo,
             "info": paciente_pessoa_consulta.info,
             "cpf": paciente_pessoa_consulta.pessoa.cpf,
@@ -38,9 +38,9 @@ def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
         "consultas": [
             {
                 "id": consulta.id,
-                "idFuncionario": consulta.id_funcionario,
+                "idFuncionario": consulta.idFuncionario,
                 "data": consulta.data,
-                "dataRetorno": consulta.dataretorno,  # Certifique-se de que este campo existe no modelo de consulta
+                "dataRetorno": consulta.dataRetorno,  # Certifique-se de que este campo existe no modelo de consulta
                 "hbg": consulta.hbg,
                 "tomaMedHipertensao": consulta.tomaMedHipertensao,
                 "praticaAtivFisica": consulta.praticaAtivFisica,
@@ -78,7 +78,7 @@ def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
     
     return {
         "numeroSUS": paciente.numeroSUS,
-        "idPaciente": paciente.iPaciente,
+        "idPaciente": paciente.idPaciente,
         "dataNascimento": paciente.dataNascimento,
         "sexo": paciente.sexo,
         "info": paciente.info,
