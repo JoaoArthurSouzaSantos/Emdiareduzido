@@ -9,8 +9,8 @@ class FuncionarioCreate(BaseModel):
         orm_mode = True
 
 class FuncionarioOut(BaseModel):
-    id: str
     username: str
+    password: str
 
     class Config:
         orm_mode = True

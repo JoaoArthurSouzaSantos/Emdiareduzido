@@ -34,7 +34,7 @@ def read_funcionario(id: str, db: Session = Depends(get_db)):
     return funcionario
 
 @router.put("/update/{id}", response_model=FuncionarioOut)
-def update_funcionario(id: str, funcionario_update: FuncionarioCreate, db: Session = Depends(get_db)):
+def update_funcionario(id: str, funcionario_update: FuncionarioOut, db: Session = Depends(get_db)):
     db_funcionario = db.query(Funcionario).filter(Funcionario.id == id).first()
     if db_funcionario is None:
         raise HTTPException(status_code=404, detail="Funcionário não encontrado")

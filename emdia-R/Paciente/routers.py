@@ -15,8 +15,8 @@ def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
     # Buscar o paciente, pessoa e consultas associadas
     paciente_pessoa_consulta = (
         db.query(Paciente)
-        .join(Pessoa, Paciente.id_paciente == Pessoa.cpf)
-        .outerjoin(Consulta, Paciente.numeroSUS == Consulta.id_paciente)
+        .join(Pessoa, Paciente.idPaciente == Pessoa.cpf)
+        .outerjoin(Consulta, Paciente.numeroSUS == Consulta.idPaciente)
         .filter(Paciente.numeroSUS == numeroSUS)
         .first()
     )
@@ -28,7 +28,7 @@ def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
     resultado = {
         "paciente": {
             "numeroSUS": paciente_pessoa_consulta.numeroSUS,
-            "data_nascimento": paciente_pessoa_consulta.data_nascimento,
+            "dataNascimento": paciente_pessoa_consulta.data_nascimento,
             "sexo": paciente_pessoa_consulta.sexo,
             "info": paciente_pessoa_consulta.info,
             "cpf": paciente_pessoa_consulta.pessoa.cpf,
@@ -38,9 +38,9 @@ def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
         "consultas": [
             {
                 "id": consulta.id,
-                "id_funcionario": consulta.id_funcionario,
+                "idFuncionario": consulta.id_funcionario,
                 "data": consulta.data,
-                "dataretorno": consulta.dataretorno,  # Certifique-se de que este campo existe no modelo de consulta
+                "dataRetorno": consulta.dataretorno,  # Certifique-se de que este campo existe no modelo de consulta
                 "hbg": consulta.hbg,
                 "tomaMedHipertensao": consulta.tomaMedHipertensao,
                 "praticaAtivFisica": consulta.praticaAtivFisica,
@@ -65,8 +65,8 @@ def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
 def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
     # Realizando a consulta para buscar o Paciente e a Pessoa associada
     paciente_pessoa = (
-        db.query(Paciente)
-        .join(Pessoa, Paciente.id_paciente == Pessoa.cpf)
+        db.query(Paciente, Pessoa)
+        .join(Pessoa, Paciente.idPaciente == Pessoa.cpf)
         .filter(Paciente.numeroSUS == numeroSUS)
         .first()
     )
@@ -74,7 +74,21 @@ def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
     if paciente_pessoa is None:
         raise HTTPException(status_code=404, detail="Paciente ou Pessoa não encontrados")
     
-    return paciente_pessoa
+    paciente, pessoa = paciente_pessoa
+    
+    return {
+        "numeroSUS": paciente.numeroSUS,
+        "idPaciente": paciente.iPaciente,
+        "dataNascimento": paciente.dataNascimento,
+        "sexo": paciente.sexo,
+        "info": paciente.info,
+        "pessoa": {
+            "cpf": pessoa.cpf,
+            "nome": pessoa.nome,
+            "email": pessoa.email
+        }
+    }
+
 
 @router.post("/create/", response_model=PacienteOut)
 def create_paciente(paciente_create: PacienteCreate, db: Session = Depends(get_db)):
