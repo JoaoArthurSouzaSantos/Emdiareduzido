@@ -27,7 +27,7 @@ class ConsultaOut(BaseModel):
     idPaciente: str
     idFuncionario: str
     data: date
-    dataretorno: date
+    dataRetorno: date
     hbg: float
     tomaMedHipertensao: str
     praticaAtivFisica: str
@@ -40,10 +40,33 @@ class ConsultaOut(BaseModel):
     frequenciaIngestaoVegetaisFrutas: str
     historicoFamiliar: str
     medico: str
-    nome: str  # Incluímos o nome diretamente
 
     class Config:
         orm_mode = True
+
+class ConsultaFuncionarioId(BaseModel):
+    id: int
+    idPaciente: str
+    idFuncionario: str
+    data: date
+    dataRetorno: date
+    hbg: float
+    tomaMedHipertensao: str
+    praticaAtivFisica: str
+    imc: float
+    peso: float
+    historicoAcucarElevado: str
+    altura: float
+    cintura: float
+    resultadoFindRisc: str
+    frequenciaIngestaoVegetaisFrutas: str
+    historicoFamiliar: str
+    medico: str
+    nome: str
+
+    class Config:
+        orm_mode = True
+
 
 
 class ConsultaPacientePessoaOut(BaseModel):

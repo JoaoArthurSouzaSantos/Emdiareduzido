@@ -7,7 +7,7 @@ from .models import Consulta
 from Paciente.models import Paciente
 from Funcionario.models import Funcionario
 from Pessoa.models import Pessoa
-from .schemas import ConsultaCreate, ConsultaOut,ConsultaPacientePessoaOut,EvolucaoHB
+from .schemas import ConsultaCreate, ConsultaOut,ConsultaPacientePessoaOut,EvolucaoHB,ConsultaFuncionarioId
 from typing import List
 from datetime import date
 
@@ -16,12 +16,12 @@ router = APIRouter()
 @router.post("/consulta/", response_model=ConsultaCreate)
 def create_consulta(consulta: ConsultaCreate, db: Session = Depends(get_db)):
     # Verificar se o paciente existe
-    paciente = db.query(Paciente).filter(Paciente.numeroSUS == consulta.id_paciente).first()
+    paciente = db.query(Paciente).filter(Paciente.numeroSUS == consulta.idPaciente).first()
     if not paciente:
         raise HTTPException(status_code=404, detail="Paciente não encontrado")
     
     # Verificar se o funcionário existe
-    funcionario = db.query(Funcionario).filter(Funcionario.id == consulta.id_funcionario).first()
+    funcionario = db.query(Funcionario).filter(Funcionario.id == consulta.idFuncionario).first()
     if not funcionario:
         raise HTTPException(status_code=404, detail="Funcionário não encontrado")
 
@@ -75,11 +75,11 @@ def get_historico_consultas(db: Session = Depends(get_db)):
 def get_consultas_por_data(data_escolhida: date, db: Session = Depends(get_db)):
     consultas = db.query(
         Consulta.id,
-        Consulta.id_paciente,
+        Consulta.idPaciente,
         Pessoa.nome.label("nome"),  # Junta com a tabela Pessoa para pegar o nome
-        Consulta.id_funcionario,
+        Consulta.idFuncionario,
         Consulta.data,
-        Consulta.dataretorno,
+        Consulta.dataRetorno,
         Consulta.hbg,
         Consulta.tomaMedHipertensao,
         Consulta.praticaAtivFisica,
@@ -92,22 +92,22 @@ def get_consultas_por_data(data_escolhida: date, db: Session = Depends(get_db)):
         Consulta.frequenciaIngestaoVegetaisFrutas,
         Consulta.historicoFamiliar,
         Consulta.medico
-    ).join(Paciente, Paciente.numeroSUS == Consulta.id_paciente)\
-     .join(Pessoa, Pessoa.cpf == Paciente.id_paciente)\
+    ).join(Paciente, Paciente.numeroSUS == Consulta.idPaciente)\
+     .join(Pessoa, Pessoa.cpf == Paciente.idPaciente)\
      .filter(Consulta.data == data_escolhida)\
      .all()
 
     return consultas
 
-@router.get("/relatorio/funcionario/{id_funcionario}", response_model=List[ConsultaOut])
-def get_consultas_por_funcionario(id_funcionario: str, db: Session = Depends(get_db)):
+@router.get("/relatorio/funcionario/{id_funcionario}", response_model=List[ConsultaFuncionarioId])
+def get_consultas_por_funcionario(idFuncionario: str, db: Session = Depends(get_db)):
     consultas = db.query(
         Consulta.id,
-        Consulta.id_paciente,
+        Consulta.idPaciente,
         Pessoa.nome.label("nome"),  # Junta com a tabela Pessoa para pegar o nome
-        Consulta.id_funcionario,
+        Consulta.idFuncionario,
         Consulta.data,
-        Consulta.dataretorno,
+        Consulta.dataRetorno,
         Consulta.hbg,
         Consulta.tomaMedHipertensao,
         Consulta.praticaAtivFisica,
@@ -120,23 +120,23 @@ def get_consultas_por_funcionario(id_funcionario: str, db: Session = Depends(get
         Consulta.frequenciaIngestaoVegetaisFrutas,
         Consulta.historicoFamiliar,
         Consulta.medico
-    ).join(Paciente, Paciente.numeroSUS == Consulta.id_paciente)\
-     .join(Pessoa, Pessoa.cpf == Paciente.id_paciente)\
-     .filter(Consulta.id_funcionario == id_funcionario)\
+    ).join(Paciente, Paciente.numeroSUS == Consulta.idPaciente)\
+     .join(Pessoa, Pessoa.cpf == Paciente.idPaciente)\
+     .filter(Consulta.idFuncionario == idFuncionario)\
      .all()
 
     return consultas
 
 
 @router.get("/relatorio/paciente/{id_paciente}", response_model=List[ConsultaOut])
-def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
+def get_consultas_por_paciente(idPaciente: str, db: Session = Depends(get_db)):
     consultas = db.query(
         Consulta.id,
-        Consulta.id_paciente,
+        Consulta.idPaciente,
         Pessoa.nome.label("nome"),  # Junta com a tabela Pessoa para pegar o nome
-        Consulta.id_funcionario,
+        Consulta.idFuncionario,
         Consulta.data,
-        Consulta.dataretorno,
+        Consulta.dataRetorno,
         Consulta.hbg,
         Consulta.tomaMedHipertensao,
         Consulta.praticaAtivFisica,
@@ -149,9 +149,9 @@ def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
         Consulta.frequenciaIngestaoVegetaisFrutas,
         Consulta.historicoFamiliar,
         Consulta.medico
-    ).join(Paciente, Paciente.numeroSUS == Consulta.id_paciente)\
-     .join(Pessoa, Pessoa.cpf == Paciente.id_paciente)\
-     .filter(Consulta.id_paciente == id_paciente)\
+    ).join(Paciente, Paciente.numeroSUS == Consulta.idPaciente)\
+     .join(Pessoa, Pessoa.cpf == Paciente.idPaciente)\
+     .filter(Consulta.idPaciente == idPaciente)\
      .all()
 
     return consultas
@@ -162,8 +162,8 @@ def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
 def get_consultas_por_periodo(data_inicio: date, data_fim: date, db: Session = Depends(get_db)):
     consultas = db.query(
         Consulta.id,
-        Consulta.id_paciente,
-        Consulta.id_funcionario,
+        Consulta.idPaciente,
+        Consulta.idFuncionario,
         Consulta.data,
         Consulta.dataRetorno,
         Consulta.hbg,
@@ -179,8 +179,8 @@ def get_consultas_por_periodo(data_inicio: date, data_fim: date, db: Session = D
         Consulta.historicoFamiliar,
         Consulta.medico,
         Pessoa.nome.label("nome")  # Pega o nome diretamente da tabela Pessoa
-    ).join(Paciente, Paciente.numeroSUS == Consulta.id_paciente)\
-     .join(Pessoa, Pessoa.cpf == Paciente.id_paciente)\
+    ).join(Paciente, Paciente.numeroSUS == Consulta.idPaciente)\
+     .join(Pessoa, Pessoa.cpf == Paciente.idPaciente)\
      .filter(and_(Consulta.data >= data_inicio, Consulta.data <= data_fim))\
      .all()
 
@@ -202,18 +202,18 @@ def get_consultas_futuras(db: Session = Depends(get_db)):
 
 
 @router.get("/relatorio/paciente/pessoa/consultas_completo_da_pessoa{id_paciente}", response_model=List[ConsultaPacientePessoaOut])
-def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
+def get_consultas_por_paciente(idPaciente: str, db: Session = Depends(get_db)):
     consultas = db.query(Consulta, Paciente, Pessoa).\
-        join(Paciente, Consulta.id_paciente == Paciente.numeroSUS).\
-        join(Pessoa, Paciente.id_paciente == Pessoa.cpf).\
-        filter(Consulta.id_paciente == id_paciente).all()
+        join(Paciente, Consulta.idPaciente == Paciente.numeroSUS).\
+        join(Pessoa, Paciente.idPaciente == Pessoa.cpf).\
+        filter(Consulta.idPaciente == idPaciente).all()
 
     results = []
     for consulta, paciente, pessoa in consultas:
         results.append({
             "id": consulta.id,
-            "id_paciente": consulta.id_paciente,
-            "id_funcionario": consulta.id_funcionario,
+            "idPaciente": consulta.idPaciente,
+            "idFuncionario": consulta.idFuncionario,
             "data": consulta.data,
             "dataRetorno": consulta.dataRetorno,
             "hbg": consulta.hbg,
@@ -229,7 +229,7 @@ def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
             "historicoFamiliar": consulta.historicoFamiliar,
             "medico": consulta.medico,
             "numeroSUS": paciente.numeroSUS,
-            "data_nascimento": paciente.data_nascimento,
+            "dataNascimento": paciente.dataNascimento,
             "sexo": paciente.sexo,
             "info": paciente.info,
             "cpf": pessoa.cpf,
@@ -241,16 +241,17 @@ def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
 
 
 @router.get("/relatorio/evoluçãoHB{id_paciente}", response_model=List[EvolucaoHB])
-def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
+def get_consultas_por_paciente(idPaciente: str, db: Session = Depends(get_db)):
     consultas = db.query(Consulta, Paciente, Pessoa).\
-        join(Paciente, Consulta.id_paciente == Paciente.numeroSUS).\
-        join(Pessoa, Paciente.id_paciente == Pessoa.cpf).\
-        filter(Consulta.id_paciente == id_paciente).all()
+        join(Paciente, Consulta.idPaciente == Paciente.numeroSUS).\
+        join(Pessoa, Paciente.idPaciente == Pessoa.cpf).\
+        filter(Consulta.idPaciente == idPaciente).all()
 
     results = []
     for consulta, paciente, pessoa in consultas:
         results.append({
             "data": consulta.data,
+            "dataRetorno": consulta.dataRetorno,
             "hbg": consulta.hbg,
             "tomaMedHipertensao": consulta.tomaMedHipertensao,
             "praticaAtivFisica": consulta.praticaAtivFisica,
@@ -263,7 +264,7 @@ def get_consultas_por_paciente(id_paciente: str, db: Session = Depends(get_db)):
             "frequenciaIngestaoVegetaisFrutas": consulta.frequenciaIngestaoVegetaisFrutas,
             "historicoFamiliar": consulta.historicoFamiliar,
             "medico": consulta.medico,
-            "data_nascimento": paciente.data_nascimento,
+            "dataNascimento": paciente.dataNascimento,
             "sexo": paciente.sexo,
             "info": paciente.info,
             "nome": pessoa.nome,
