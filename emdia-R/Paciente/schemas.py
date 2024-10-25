@@ -14,6 +14,7 @@ class PacienteCreate(BaseModel):
         orm_mode = True
 
 class PacienteOut(BaseModel):
+    dataNascimento:  date
     numeroSUS: str
     idPaciente: str  
     sexo : str
