@@ -5,7 +5,7 @@ from typing import List
 
 class PacienteCreate(BaseModel):
     dataNascimento:  date
-    numeroSUS: int
+    numeroSUS: str
     idPaciente: str  
     sexo : str
     info: str
@@ -14,7 +14,7 @@ class PacienteCreate(BaseModel):
         orm_mode = True
 
 class PacienteOut(BaseModel):
-    numeroSUS: int
+    numeroSUS: str
     idPaciente: str  
     sexo : str
     info: str
@@ -31,7 +31,7 @@ class PessoaOut(BaseModel):
         orm_mode = True
 
 class PacienteWithPessoaOut(BaseModel):
-    numeroSUS: int
+    numeroSUS: str
     idPaciente: str
     dataNascimento: Optional[date]  # ou Date
     sexo: Optional[str]
@@ -43,7 +43,7 @@ class PacienteWithPessoaOut(BaseModel):
 
 class ConsultaOut(BaseModel):
     id: int  
-    idPaciente: int  
+    idPaciente: str  
     idFuncionario: str  
     data: date
     dataRetorno: date  
