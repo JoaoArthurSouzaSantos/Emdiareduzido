@@ -3,7 +3,7 @@ from datetime import date
 from typing import Optional
 
 class ConsultaCreate(BaseModel):
-    idPaciente: int  
+    idPaciente: str  
     idFuncionario: str  
     data: date  
     dataRetorno: date  # Certifique-se de que este nome corresponde ao nome do campo no SQLAlchemy
@@ -89,7 +89,7 @@ class ConsultaPacientePessoaOut(BaseModel):
     medico: Optional[str] = None
     
     numeroSUS: str
-    data_nascimento: date
+    dataNascimento: date
     sexo: str
     info: str
     cpf: str

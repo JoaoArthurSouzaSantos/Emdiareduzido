@@ -37,16 +37,16 @@ def create_consulta(consulta: ConsultaCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=400, detail="Erro de integridade ao criar a consulta")
 
-@router.get("/consulta/{consulta_id}", response_model=ConsultaOut)
-def read_consulta(consulta_id: int, db: Session = Depends(get_db)):
-    db_consulta = db.query(Consulta).filter(Consulta.id == consulta_id).first()
+@router.get("/consulta/{consultaId}", response_model=ConsultaOut)
+def read_consulta(consultaId: int, db: Session = Depends(get_db)):
+    db_consulta = db.query(Consulta).filter(Consulta.id == consultaId).first()
     if db_consulta is None:
         raise HTTPException(status_code=404, detail="Consulta not found")
     return db_consulta
 
-@router.put("/consulta/{consulta_id}", response_model=ConsultaOut)
-def update_consulta(consulta_id: int, consulta: ConsultaCreate, db: Session = Depends(get_db)):
-    db_consulta = db.query(Consulta).filter(Consulta.id == consulta_id).first()
+@router.put("/consulta/{consultaId}", response_model=ConsultaOut)
+def update_consulta(consultaId: int, consulta: ConsultaCreate, db: Session = Depends(get_db)):
+    db_consulta = db.query(Consulta).filter(Consulta.id == consultaId).first()
     if db_consulta is None:
         raise HTTPException(status_code=404, detail="Consulta not found")
     for key, value in consulta.dict().items():
@@ -55,9 +55,9 @@ def update_consulta(consulta_id: int, consulta: ConsultaCreate, db: Session = De
     db.refresh(db_consulta)
     return db_consulta
 
-@router.delete("/consulta/{consulta_id}")
-def delete_consulta(consulta_id: int, db: Session = Depends(get_db)):
-    db_consulta = db.query(Consulta).filter(Consulta.id == consulta_id).first()
+@router.delete("/consulta/{consultaId}")
+def delete_consulta(consultaId: int, db: Session = Depends(get_db)):
+    db_consulta = db.query(Consulta).filter(Consulta.id == consultaId).first()
     if db_consulta is None:
         raise HTTPException(status_code=404, detail="Consulta not found")
     db.delete(db_consulta)
@@ -72,7 +72,7 @@ def get_historico_consultas(db: Session = Depends(get_db)):
 
 # Consultas dentro de uma data escolhida
 @router.get("/relatorio/data", response_model=List[ConsultaOut])
-def get_consultas_por_data(data_escolhida: date, db: Session = Depends(get_db)):
+def get_consultas_por_data(dataEscolhida: date, db: Session = Depends(get_db)):
     consultas = db.query(
         Consulta.id,
         Consulta.idPaciente,
@@ -94,7 +94,7 @@ def get_consultas_por_data(data_escolhida: date, db: Session = Depends(get_db)):
         Consulta.medico
     ).join(Paciente, Paciente.numeroSUS == Consulta.idPaciente)\
      .join(Pessoa, Pessoa.cpf == Paciente.idPaciente)\
-     .filter(Consulta.data == data_escolhida)\
+     .filter(Consulta.data == dataEscolhida)\
      .all()
 
     return consultas
@@ -159,7 +159,7 @@ def get_consultas_por_paciente(idPaciente: str, db: Session = Depends(get_db)):
 
 
 @router.get("/relatorio/periodo", response_model=List[ConsultaOut])
-def get_consultas_por_periodo(data_inicio: date, data_fim: date, db: Session = Depends(get_db)):
+def get_consultas_por_periodo(dataInicio: date, dataFim: date, db: Session = Depends(get_db)):
     consultas = db.query(
         Consulta.id,
         Consulta.idPaciente,
@@ -181,7 +181,7 @@ def get_consultas_por_periodo(data_inicio: date, data_fim: date, db: Session = D
         Pessoa.nome.label("nome")  # Pega o nome diretamente da tabela Pessoa
     ).join(Paciente, Paciente.numeroSUS == Consulta.idPaciente)\
      .join(Pessoa, Pessoa.cpf == Paciente.idPaciente)\
-     .filter(and_(Consulta.data >= data_inicio, Consulta.data <= data_fim))\
+     .filter(and_(Consulta.dataRetorno >= dataInicio, Consulta.dataRetorno <= dataFim))\
      .all()
 
     return consultas
@@ -201,7 +201,7 @@ def get_consultas_futuras(db: Session = Depends(get_db)):
 
 
 
-@router.get("/relatorio/paciente/pessoa/consultas_completo_da_pessoa{id_paciente}", response_model=List[ConsultaPacientePessoaOut])
+@router.get("/relatorio/paciente/pessoa/consultas_completo_da_pessoa{idPaciente}", response_model=List[ConsultaPacientePessoaOut])
 def get_consultas_por_paciente(idPaciente: str, db: Session = Depends(get_db)):
     consultas = db.query(Consulta, Paciente, Pessoa).\
         join(Paciente, Consulta.idPaciente == Paciente.numeroSUS).\
