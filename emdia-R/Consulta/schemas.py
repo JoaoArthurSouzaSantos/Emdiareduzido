@@ -41,6 +41,8 @@ class ConsultaOut(BaseModel):
     historicoFamiliar: str
     medico: str
 
+    nome: str
+    
     class Config:
         orm_mode = True
 

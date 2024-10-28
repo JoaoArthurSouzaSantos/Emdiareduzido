@@ -94,7 +94,7 @@ def get_consultas_por_data(dataEscolhida: date, db: Session = Depends(get_db)):
         Consulta.medico
     ).join(Paciente, Paciente.numeroSUS == Consulta.idPaciente)\
      .join(Pessoa, Pessoa.cpf == Paciente.idPaciente)\
-     .filter(Consulta.data == dataEscolhida)\
+     .filter(Consulta.dataRetorno == dataEscolhida)\
      .all()
 
     return consultas
@@ -161,6 +161,7 @@ def get_consultas_por_paciente(idPaciente: str, db: Session = Depends(get_db)):
 @router.get("/relatorio/periodo", response_model=List[ConsultaOut])
 def get_consultas_por_periodo(dataInicio: date, dataFim: date, db: Session = Depends(get_db)):
     consultas = db.query(
+        Pessoa.nome.label("nome"),  # Pega o nome diretamente da tabela Pessoa
         Consulta.id,
         Consulta.idPaciente,
         Consulta.idFuncionario,
@@ -178,7 +179,7 @@ def get_consultas_por_periodo(dataInicio: date, dataFim: date, db: Session = Dep
         Consulta.frequenciaIngestaoVegetaisFrutas,
         Consulta.historicoFamiliar,
         Consulta.medico,
-        Pessoa.nome.label("nome")  # Pega o nome diretamente da tabela Pessoa
+        
     ).join(Paciente, Paciente.numeroSUS == Consulta.idPaciente)\
      .join(Pessoa, Pessoa.cpf == Paciente.idPaciente)\
      .filter(and_(Consulta.dataRetorno >= dataInicio, Consulta.dataRetorno <= dataFim))\
