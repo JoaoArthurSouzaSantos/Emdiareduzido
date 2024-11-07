@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String , Date , ForeignKey
+from sqlalchemy import Column, String , Date , ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from shared.database import Base
 
@@ -10,6 +10,7 @@ class Paciente(Base):
     dataNascimento = Column(Date)
     sexo = Column(String(255), index=True)
     info = Column(String(255), index=True)
+    micro = Column(Integer, index=True)
     pessoa = relationship("Pessoa", back_populates="paciente")
     consultas = relationship("Consulta", back_populates="paciente")
 
