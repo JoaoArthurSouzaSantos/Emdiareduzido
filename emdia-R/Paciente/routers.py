@@ -34,6 +34,7 @@ def get_paciente_pessoa_consulta(numeroSUS: str, db: Session = Depends(get_db)):
             "cpf": paciente_pessoa_consulta.pessoa.cpf,
             "nome": paciente_pessoa_consulta.pessoa.nome,
             "email": paciente_pessoa_consulta.pessoa.email,
+            "micro" : paciente_pessoa_consulta.pessoa.micro,
         },
         "consultas": [
             {
@@ -82,6 +83,7 @@ def get_paciente_with_pessoa(numeroSUS: str, db: Session = Depends(get_db)):
         "dataNascimento": paciente.dataNascimento,
         "sexo": paciente.sexo,
         "info": paciente.info,
+        "micro": paciente.micro,
         "pessoa": {
             "cpf": pessoa.cpf,
             "nome": pessoa.nome,

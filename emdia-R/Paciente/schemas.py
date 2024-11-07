@@ -9,6 +9,7 @@ class PacienteCreate(BaseModel):
     idPaciente: str  
     sexo : str
     info: str
+    micro: int
 
     class Config:
         orm_mode = True
@@ -19,6 +20,7 @@ class PacienteOut(BaseModel):
     idPaciente: str  
     sexo : str
     info: str
+    micro: int
 
     class Config:
         orm_mode = True
@@ -27,7 +29,7 @@ class PessoaOut(BaseModel):
     cpf: str
     nome: str
     email: str
-
+    micro: int
     class Config:
         orm_mode = True
 
@@ -38,7 +40,7 @@ class PacienteWithPessoaOut(BaseModel):
     sexo: Optional[str]
     info: Optional[str]
     pessoa: PessoaOut
-
+    micro: int
     class Config:
         orm_mode = True
 
@@ -70,7 +72,7 @@ class PacienteSchema(BaseModel):
     cpf: str
     nome: str
     email: str
-
+    micro: int
     class Config:
         orm_mode = True
 
