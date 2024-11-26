@@ -1,4 +1,4 @@
-from shared.database import Base
+from app.db.base import Base
 from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import pool
@@ -16,10 +16,10 @@ if config.config_file_name is not None:
 
 
 # noinspection PyUnresolvedReferences
-from Pessoa.models import Pessoa
-from Funcionario.models import Funcionario
-from Paciente.models import Paciente
-from Consulta.models import Consulta
+from app.pessoa.models import Pessoa
+from app.funcionario.models import FuncionarioModel
+from app.paciente.models import Paciente
+from app.consulta.models import Consulta
 target_metadata = Base.metadata
 
 
